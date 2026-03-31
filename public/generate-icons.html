@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Generate Raíz Icons</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #fdf8f0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; gap: 24px; margin: 0; }
+    h1 { font-size: 22px; color: #1c1208; margin: 0; }
+    p { color: #a08870; font-size: 14px; margin: 0; text-align: center; line-height: 1.6; }
+    canvas { border-radius: 22px; box-shadow: 0 8px 32px rgba(232,121,160,0.3); }
+    .buttons { display: flex; gap: 12px; }
+    button {
+      padding: 12px 24px; border-radius: 50px; border: none; cursor: pointer;
+      font-size: 15px; font-weight: 600; font-family: inherit;
+      background: linear-gradient(135deg, #e879a0, #f97316); color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Raíz — Icon Generator</h1>
+  <p>Click to download both sizes, then place them<br>in the <code>public/</code> folder and redeploy.</p>
+  <canvas id="preview" width="192" height="192"></canvas>
+  <div class="buttons">
+    <button onclick="download(192)">Download 192×192</button>
+    <button onclick="download(512)">Download 512×512</button>
+  </div>
+
+  <script>
+    function drawIcon(size) {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      // ── Rounded rect clip ──────────────────────────
+      const br = size * 0.22;
+      ctx.beginPath();
+      ctx.moveTo(br, 0);
+      ctx.lineTo(size - br, 0);
+      ctx.quadraticCurveTo(size, 0, size, br);
+      ctx.lineTo(size, size - br);
+      ctx.quadraticCurveTo(size, size, size - br, size);
+      ctx.lineTo(br, size);
+      ctx.quadraticCurveTo(0, size, 0, size - br);
+      ctx.lineTo(0, br);
+      ctx.quadraticCurveTo(0, 0, br, 0);
+      ctx.closePath();
+      ctx.clip();
+
+      // ── Gradient background ────────────────────────
+      const grad = ctx.createLinearGradient(0, 0, size, size);
+      grad.addColorStop(0, '#e879a0');
+      grad.addColorStop(1, '#f97316');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, size, size);
+
+      // ── Sparkle symbol ─────────────────────────────
+      const cx = size / 2;
+      const cy = size / 2;
+      const r = size * 0.3;
+
+      ctx.fillStyle = 'rgba(255,255,255,0.95)';
+
+      ctx.beginPath();
+      // 4-pointed star (sparkle)
+      for (let i = 0; i < 4; i++) {
+        const angle = (i / 4) * Math.PI * 2 - Math.PI / 2;
+        const innerAngle = angle + Math.PI / 4;
+        const outerX = cx + Math.cos(angle) * r;
+        const outerY = cy + Math.sin(angle) * r;
+        const innerR = r * 0.12;
+        const innerX = cx + Math.cos(innerAngle) * innerR;
+        const innerY = cy + Math.sin(innerAngle) * innerR;
+        if (i === 0) {
+          ctx.moveTo(cx, cy - r);
+        }
+        ctx.quadraticCurveTo(innerX, innerY, outerX, outerY);
+        const nextAngle = ((i + 1) / 4) * Math.PI * 2 - Math.PI / 2;
+        const nextOuterX = cx + Math.cos(nextAngle) * r;
+        const nextOuterY = cy + Math.sin(nextAngle) * r;
+        const nextInnerAngle = nextAngle - Math.PI / 4;
+        const nextInnerX = cx + Math.cos(nextInnerAngle) * innerR;
+        const nextInnerY = cy + Math.sin(nextInnerAngle) * innerR;
+        ctx.quadraticCurveTo(nextInnerX, nextInnerY, nextOuterX, nextOuterY);
+      }
+      ctx.closePath();
+      ctx.fill();
+
+      return canvas;
+    }
+
+    // Draw preview
+    const preview = document.getElementById('preview');
+    const pctx = preview.getContext('2d');
+    pctx.drawImage(drawIcon(192), 0, 0);
+
+    function download(size) {
+      const a = document.createElement('a');
+      a.download = `icon-${size}.png`;
+      a.href = drawIcon(size).toDataURL('image/png');
+      a.click();
+    }
+  </script>
+</body>
+</html>

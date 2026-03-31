@@ -1,0 +1,24 @@
+{
+  "name": "Raíz",
+  "short_name": "Raíz",
+  "description": "Where your thoughts take root.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdf8f0",
+  "theme_color": "#fdf8f0",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
