@@ -233,7 +233,7 @@ function useWakeLock(active) {
 // MOOD PICKER
 // ═══════════════════════════════════════════════════════════
 
-const MOOD_LABELS   = ['Drained','Tired','Neutral','Good','Energised'];
+const MOOD_LABELS   = ['Stressed','Flat','Neutral','Calm','Happy'];
 const ENERGY_EMOJIS = ['🌑','🌒','🌓','🌔','🌕'];
 
 function MoodPicker({ stage, onSubmit, accent, nightMode }) {
