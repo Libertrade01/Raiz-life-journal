@@ -233,8 +233,8 @@ function useWakeLock(active) {
 // MOOD PICKER
 // ═══════════════════════════════════════════════════════════
 
-const MOOD_LABELS   = ['Stressed','Flat','Neutral','Calm','Happy'];
-const ENERGY_EMOJIS = ['🌑','🌒','🌓','🌔','🌕'];
+const MOOD_LABELS   = ['Anxious','Stressed','Neutral','Calm','Happy'];
+const ENERGY_LABELS = ['Drained','Tired','Neutral','Good','Energised'];
 
 function MoodPicker({ stage, onSubmit, accent, nightMode }) {
   const [mood, setMood]     = useState(null);
@@ -273,15 +273,16 @@ function MoodPicker({ stage, onSubmit, accent, nightMode }) {
       </div>
 
       <p style={{ fontSize: 12, color: muted, letterSpacing: 0.8, textTransform: 'uppercase', margin: '0 0 14px', fontWeight: 600 }}>Energy</p>
-      <div style={{ display: 'flex', gap: 12, marginBottom: 48 }}>
-        {ENERGY_EMOJIS.map((e, i) => (
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 48, justifyContent: 'center' }}>
+        {ENERGY_LABELS.map((label, i) => (
           <button key={i} onClick={() => setEnergy(i + 1)} style={{
-            width: 52, height: 52, borderRadius: '50%', fontSize: 18,
-            border: energy === i + 1 ? `2.5px solid ${accent}` : '2.5px solid transparent',
+            padding: '10px 18px', borderRadius: 50, fontSize: 13, fontWeight: 600,
+            border: energy === i + 1 ? `2px solid ${accent}` : `2px solid ${nightMode ? '#2a3050' : '#e5e7eb'}`,
             background: energy === i + 1 ? `${accent}20` : nightMode ? '#161b2e' : '#f5f5f5',
-            cursor: 'pointer', transition: 'all 0.15s',
-            boxShadow: energy === i + 1 ? `0 0 0 3px ${accent}30` : 'none',
-          }}>{e}</button>
+            color: energy === i + 1 ? accent : muted,
+            cursor: 'pointer', transition: 'all 0.15s', fontFamily: 'inherit',
+            boxShadow: energy === i + 1 ? `0 0 0 3px ${accent}25` : 'none',
+          }}>{label}</button>
         ))}
       </div>
 
@@ -918,7 +919,7 @@ function TrackerView({ completions, colors, isDark }) {
                 {c.mood_after && (
                   <div style={{ display: 'flex', gap: 4 }}>
                     <span style={{ fontSize: 11, fontWeight: 600, color: muted }}>{MOOD_LABELS[c.mood_after - 1]}</span>
-                    <span style={{ fontSize: 16 }}>{ENERGY_EMOJIS[c.energy_after - 1]}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: muted }}>{ENERGY_LABELS[c.energy_after - 1]}</span>
                   </div>
                 )}
               </div>
