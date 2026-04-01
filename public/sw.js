@@ -19,3 +19,20 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
 });
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const routine = e.notification.data?.routine;
+  const url = routine ? `/?routine=${routine}` : '/';
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
+      const existing = clients.find(c => c.url.includes(self.location.origin));
+      if (existing) {
+        existing.focus();
+        existing.navigate(url);
+      } else {
+        self.clients.openWindow(url);
+      }
+    })
+  );
+});

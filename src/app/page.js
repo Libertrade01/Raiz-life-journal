@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
+import BreathworkApp from './BreathworkApp';
 
 // ═══════════════════════════════════════════════════════════
 // THEME PALETTES
@@ -981,6 +982,118 @@ function TodoSheet({ open, onClose, onSave, onUpdate, editTodo, colors, accent, 
 }
 
 // ═══════════════════════════════════════════════════════════
+// LANDING PAGE
+// ═══════════════════════════════════════════════════════════
+
+function LandingPage({ isDark, colors, initial, onSelect, onToggleTheme, onLogout }) {
+  const bg   = isDark ? '#160e06' : '#fdf8f0';
+  const text = colors.text;
+  const muted = colors.muted;
+
+  return (
+    <div style={{
+      minHeight: '100dvh', background: bg,
+      fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+      color: text, maxWidth: 430, margin: '0 auto',
+      display: 'flex', flexDirection: 'column',
+      padding: 'max(24px, env(safe-area-inset-top)) 24px 40px',
+    }}>
+      {/* Top bar */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 48 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 12,
+            background: 'linear-gradient(135deg, #e879a0 0%, #f97316 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 18,
+          }}>✦</div>
+          <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px' }}>Raíz</span>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={onToggleTheme} style={{
+            width: 36, height: 36, borderRadius: 50,
+            background: isDark ? '#3a2618' : '#ede5d8',
+            border: 'none', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {isDark
+              ? <SunIcon  size={16} color="#f0dcc8" />
+              : <MoonIcon size={16} color="#a08870" />
+            }
+          </button>
+          <button onClick={onLogout} title="Sign out" style={{
+            width: 36, height: 36, borderRadius: 50,
+            background: isDark ? '#3a2618' : '#ede5d8',
+            border: 'none', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 13, fontWeight: 700, color: muted, fontFamily: 'inherit',
+          }}>
+            {initial}
+          </button>
+        </div>
+      </div>
+
+      {/* Greeting */}
+      <p style={{ fontSize: 13, fontWeight: 600, color: muted, letterSpacing: 1, textTransform: 'uppercase', margin: '0 0 8px' }}>
+        Where your thoughts take root
+      </p>
+      <h1 style={{ fontSize: 34, fontWeight: 800, color: text, margin: '0 0 48px', letterSpacing: '-1px', lineHeight: 1.1 }}>
+        What are we<br />doing today?
+      </h1>
+
+      {/* Cards */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+        {/* Journal */}
+        <button onClick={() => onSelect('journal')} style={{
+          width: '100%', borderRadius: 24, border: 'none', cursor: 'pointer',
+          background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 40%, #fecdd3 100%)',
+          padding: '28px 24px', textAlign: 'left', position: 'relative', overflow: 'hidden',
+          transition: 'transform 0.15s, box-shadow 0.15s',
+          boxShadow: isDark ? 'none' : '0 4px 24px rgba(0,0,0,0.07)',
+        }}
+          onMouseDown={e => e.currentTarget.style.transform = 'scale(0.98)'}
+          onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+        >
+          <div style={{ position: 'absolute', right: -10, bottom: -10, fontSize: 90, opacity: 0.13, lineHeight: 1 }}>✦</div>
+          <p style={{ margin: '0 0 6px', fontSize: 12, fontWeight: 700, color: '#92400e', letterSpacing: 1, textTransform: 'uppercase' }}>
+            Journal
+          </p>
+          <p style={{ margin: '0 0 4px', fontSize: 24, fontWeight: 800, color: '#78350f', lineHeight: 1.2 }}>
+            Thoughts, Ideas<br />&amp; To-Dos
+          </p>
+          <p style={{ margin: '14px 0 0', fontSize: 13, color: '#a16207' }}>
+            4 sections →
+          </p>
+        </button>
+
+        {/* Breathwork */}
+        <button onClick={() => onSelect('breathwork')} style={{
+          width: '100%', borderRadius: 24, border: 'none', cursor: 'pointer',
+          background: 'linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 40%, #e0e7ff 100%)',
+          padding: '28px 24px', textAlign: 'left', position: 'relative', overflow: 'hidden',
+          transition: 'transform 0.15s, box-shadow 0.15s',
+          boxShadow: isDark ? 'none' : '0 4px 24px rgba(0,0,0,0.07)',
+        }}
+          onMouseDown={e => e.currentTarget.style.transform = 'scale(0.98)'}
+          onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+        >
+          <div style={{ position: 'absolute', right: 8, bottom: -8, fontSize: 90, opacity: 0.12, lineHeight: 1 }}>◎</div>
+          <p style={{ margin: '0 0 6px', fontSize: 12, fontWeight: 700, color: '#0f766e', letterSpacing: 1, textTransform: 'uppercase' }}>
+            Breathwork
+          </p>
+          <p style={{ margin: '0 0 4px', fontSize: 24, fontWeight: 800, color: '#134e4a', lineHeight: 1.2 }}>
+            Morning, Post-Session<br />&amp; Night Routines
+          </p>
+          <p style={{ margin: '14px 0 0', fontSize: 13, color: '#0f766e' }}>
+            Guided · Timed · Tracked →
+          </p>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
 // MAIN APP
 // ═══════════════════════════════════════════════════════════
 
@@ -988,6 +1101,7 @@ export default function App() {
   const [isDark,         setIsDark]         = useState(false);
   const [loading,        setLoading]        = useState(true);
   const [session,        setSession]        = useState(null);
+  const [appView,        setAppView]        = useState('home'); // 'home' | 'journal' | 'breathwork'
   const [activeTab,      setActiveTab]      = useState(0);
   const [entries,        setEntries]        = useState([]);
   const [todos,          setTodos]          = useState([]);
@@ -1007,6 +1121,15 @@ export default function App() {
   useEffect(() => {
     const saved = localStorage.getItem('lj-theme');
     if (saved === 'dark') setIsDark(true);
+
+    // Handle notification tap deep-link (?routine=morning)
+    const params = new URLSearchParams(window.location.search);
+    const routineParam = params.get('routine');
+    if (routineParam) {
+      localStorage.setItem('raiz-pending-routine', routineParam);
+      setAppView('breathwork');
+      window.history.replaceState({}, '', '/');
+    }
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -1147,6 +1270,31 @@ export default function App() {
   const doneTodos   = todos.filter(t => t.is_done);
   const initial     = session.user.email?.[0]?.toUpperCase() || '?';
 
+  if (appView === 'home') {
+    return (
+      <LandingPage
+        isDark={isDark}
+        colors={colors}
+        initial={initial}
+        onSelect={setAppView}
+        onToggleTheme={toggleTheme}
+        onLogout={logout}
+      />
+    );
+  }
+
+  if (appView === 'breathwork') {
+    return (
+      <BreathworkApp
+        session={session}
+        isDark={isDark}
+        colors={colors}
+        toggleTheme={toggleTheme}
+        onBack={() => setAppView('home')}
+      />
+    );
+  }
+
   const NAV_H    = 62;
   const HEADER_H = 70;
 
@@ -1180,9 +1328,21 @@ export default function App() {
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
-        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: colors.text, letterSpacing: '-0.3px' }}>
-          {section.label}
-        </h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button onClick={() => setAppView('home')} style={{
+            width: 34, height: 34, borderRadius: 50,
+            background: `${section.accent}18`, border: 'none', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+              stroke={section.accent} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: colors.text, letterSpacing: '-0.3px' }}>
+            {section.label}
+          </h1>
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button
             onClick={toggleTheme}
