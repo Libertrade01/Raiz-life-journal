@@ -236,10 +236,10 @@ function useWakeLock(active) {
 const MOOD_LABELS   = ['Anxious','Stressed','Neutral','Calm','Happy'];
 const ENERGY_LABELS = ['Drained','Tired','Neutral','Good','Energised'];
 
-function MoodPicker({ stage, onSubmit, accent, nightMode }) {
+function MoodPicker({ stage, onSubmit, accent, nightMode, disabled = false }) {
   const [mood, setMood]     = useState(null);
   const [energy, setEnergy] = useState(null);
-  const canSubmit = mood !== null && energy !== null;
+  const canSubmit = mood !== null && energy !== null && !disabled;
   const bg   = nightMode ? '#0a0f1e' : '#fff';
   const text = nightMode ? '#c7d2fe' : '#1c1208';
   const muted = nightMode ? '#4f546e' : '#a08870';
@@ -625,6 +625,7 @@ function RoutineSession({ routine, settings, session, onBack, onComplete, nightM
   const [moodBefore, setMoodBefore]   = useState(null);
   const [energyBefore, setEnergyBefore] = useState(null);
   const [startTime]                   = useState(Date.now());
+  const [submitting, setSubmitting]   = useState(false);
 
   const bg   = nightMode ? '#05070e' : '#f8fafc';
   const text = nightMode ? '#e0e7ff' : '#1c1208';
@@ -644,17 +645,23 @@ function RoutineSession({ routine, settings, session, onBack, onComplete, nightM
   };
 
   const handleMoodAfter = async (moodAfter, energyAfter) => {
+    if (submitting) return;
+    setSubmitting(true);
     const dur = Math.round((Date.now() - startTime) / 1000);
-    await supabase.from('breath_completions').insert({
-      user_id:       session.user.id,
-      routine_type:  routine.id,
-      mood_before:   moodBefore,
-      energy_before: energyBefore,
-      mood_after:    moodAfter,
-      energy_after:  energyAfter,
-      duration_sec:  dur,
-    });
-    setPhase('done');
+    try {
+      await supabase.from('breath_completions').insert({
+        user_id:       session.user.id,
+        routine_type:  routine.id,
+        mood_before:   moodBefore,
+        energy_before: energyBefore,
+        mood_after:    moodAfter,
+        energy_after:  energyAfter,
+        duration_sec:  dur,
+      });
+      setPhase('done');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (phase === 'mood_before') {
@@ -699,7 +706,7 @@ function RoutineSession({ routine, settings, session, onBack, onComplete, nightM
   }
 
   if (phase === 'mood_after') {
-    return <MoodPicker stage="after" onSubmit={handleMoodAfter} accent={accent} nightMode={nightMode} />;
+    return <MoodPicker stage="after" onSubmit={handleMoodAfter} accent={accent} nightMode={nightMode} disabled={submitting} />;
   }
 
   // Done
