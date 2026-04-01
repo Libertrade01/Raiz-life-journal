@@ -258,7 +258,7 @@ function MoodPicker({ stage, onSubmit, accent, nightMode }) {
         {stage === 'before' ? 'How are you feeling?' : 'How do you feel now?'}
       </h2>
 
-      <p style={{ fontSize: 18, color: text, margin: '0 0 14px', fontWeight: 700, letterSpacing: '-0.3px' }}>Mood</p>
+      <p style={{ fontSize: 18, color: muted, margin: '0 0 14px', fontWeight: 700, letterSpacing: '-0.3px' }}>Mood</p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 32, justifyContent: 'center' }}>
         {MOOD_LABELS.map((label, i) => (
           <button key={i} onClick={() => setMood(i + 1)} style={{
@@ -272,7 +272,7 @@ function MoodPicker({ stage, onSubmit, accent, nightMode }) {
         ))}
       </div>
 
-      <p style={{ fontSize: 18, color: text, margin: '0 0 14px', fontWeight: 700, letterSpacing: '-0.3px' }}>Energy</p>
+      <p style={{ fontSize: 18, color: muted, margin: '0 0 14px', fontWeight: 700, letterSpacing: '-0.3px' }}>Energy</p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 48, justifyContent: 'center' }}>
         {ENERGY_LABELS.map((label, i) => (
           <button key={i} onClick={() => setEnergy(i + 1)} style={{
