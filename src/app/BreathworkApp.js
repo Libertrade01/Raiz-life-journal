@@ -43,7 +43,7 @@ const ROUTINES = {
     ],
   },
   post_session: {
-    id: 'post_session', label: 'Post-Session', emoji: '💪',
+    id: 'post_session', label: 'Post-Session', emoji: '📈',
     accent: '#14b8a6',
     grad: 'linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 50%, #99f6e4 100%)',
     exercises: [
@@ -131,40 +131,82 @@ function playChime(toneType = 'high') {
 function startAmbient(type) {
   try {
     const ctx = getAudioCtx();
+
+    // ── Singing bowl — sustained 432 Hz with slow harmonic shimmer ──
+    if (type === 'bowl') {
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const lfo  = ctx.createOscillator();
+      const lfoG = ctx.createGain();
+      const gain = ctx.createGain();
+      osc1.frequency.value = 432;
+      osc2.frequency.value = 648;  // perfect fifth harmonic
+      osc1.type = osc2.type = 'sine';
+      lfo.frequency.value = 0.07; // ultra-slow shimmer
+      lfo.type = 'sine';
+      lfoG.gain.value = 0.035;
+      gain.gain.value = 0.09;
+      lfo.connect(lfoG);
+      lfoG.connect(gain.gain);
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(ctx.destination);
+      osc1.start(); osc2.start(); lfo.start();
+      return { stop: () => { try { osc1.stop(); osc2.stop(); lfo.stop(); } catch(_){} } };
+    }
+
+    // ── Noise-based ambients ─────────────────────────────────────────
     const bufSize = 4 * ctx.sampleRate;
-    const buf  = ctx.createBuffer(2, bufSize, ctx.sampleRate);
-    // Pink noise (rain-like)
+    const buf = ctx.createBuffer(2, bufSize, ctx.sampleRate);
+
     for (let ch = 0; ch < 2; ch++) {
       const d = buf.getChannelData(ch);
-      let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
-      for (let i = 0; i < bufSize; i++) {
-        const w = Math.random() * 2 - 1;
-        b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
-        b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
-        b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
-        d[i] = (b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11;
-        b6 = w * 0.115926;
+      if (type === 'brown') {
+        // Brown noise — deep ocean rumble
+        let lastOut = 0;
+        for (let i = 0; i < bufSize; i++) {
+          const w = Math.random() * 2 - 1;
+          d[i] = (lastOut + 0.02 * w) / 1.02;
+          lastOut = d[i];
+          d[i] *= 3.5;
+        }
+      } else {
+        // Pink noise — rain / white noise
+        let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+        for (let i = 0; i < bufSize; i++) {
+          const w = Math.random() * 2 - 1;
+          b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+          b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+          b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+          d[i] = (b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11;
+          b6 = w * 0.115926;
+        }
       }
     }
-    const src    = ctx.createBufferSource();
-    src.buffer   = buf;
-    src.loop     = true;
+
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.loop   = true;
+
     const filter = ctx.createBiquadFilter();
-    filter.type  = type === 'rain' ? 'bandpass' : 'highpass';
-    filter.frequency.value = type === 'rain' ? 900 : 300;
-    if (type === 'rain') filter.Q.value = 0.4;
-    const gain   = ctx.createGain();
-    gain.gain.value = 0.07;
-    src.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
+    if (type === 'rain') {
+      filter.type = 'bandpass'; filter.frequency.value = 900; filter.Q.value = 0.4;
+    } else if (type === 'white_noise') {
+      filter.type = 'highpass'; filter.frequency.value = 300;
+    } else { // brown
+      filter.type = 'lowpass'; filter.frequency.value = 350;
+    }
+
+    const gain = ctx.createGain();
+    gain.gain.value = type === 'brown' ? 0.45 : 0.07;
+    src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
     src.start();
-    return { src, gain };
+    return { stop: () => { try { src.stop(); } catch(_){} } };
   } catch (_) { return null; }
 }
 
 function stopAmbient(ref) {
-  try { ref?.src?.stop(); } catch (_) {}
+  try { ref?.stop(); } catch (_) {}
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -192,7 +234,7 @@ function useWakeLock(active) {
 // ═══════════════════════════════════════════════════════════
 
 const MOOD_EMOJIS   = ['😔','😕','😐','😊','😄'];
-const ENERGY_EMOJIS = ['🪫','😴','⚡','⚡⚡','⚡⚡⚡'];
+const ENERGY_EMOJIS = ['🪫','🔋','⚡','🔥','🚀'];
 
 function MoodPicker({ stage, onSubmit, accent, nightMode }) {
   const [mood, setMood]     = useState(null);
@@ -323,7 +365,7 @@ function ExercisePlayer({
   const ambientRef   = useRef(null);
   const intervalRef  = useRef(null);
 
-  useWakeLock(nightMode && started && !sessionOver);
+  useWakeLock(started && !sessionOver);
 
   const applyPhase = useCallback((idx, patternArr) => {
     const p = patternArr[idx % patternArr.length];
@@ -751,7 +793,7 @@ function TrackerView({ completions, colors, isDark }) {
 
   const routineList = [
     { id: 'morning',      emoji: '☀️', label: 'Morning',      accent: '#f59e0b' },
-    { id: 'post_session', emoji: '💪', label: 'Post-Session', accent: '#14b8a6' },
+    { id: 'post_session', emoji: '📈', label: 'Post-Session', accent: '#14b8a6' },
     { id: 'night',        emoji: '🌙', label: 'Night',        accent: '#818cf8' },
   ];
 
@@ -976,16 +1018,23 @@ function SettingsSheet({ open, onClose, settings, onSave, routineId, colors, isD
           </button>
         </div>
 
-        <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
-          {['rain', 'white_noise', 'none'].map(type => (
-            <button key={type} onClick={() => setLocal(s => ({ ...s, ambient: type }))} style={{
-              flex: 1, padding: '10px 0', borderRadius: 12, border: `1.5px solid ${local.ambient === type ? accent : border}`,
-              background: local.ambient === type ? `${accent}18` : 'transparent',
-              color: local.ambient === type ? accent : muted,
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 24 }}>
+          {[
+            { id: 'rain',       label: '🌧 Rain'   },
+            { id: 'brown',      label: '🌊 Ocean'  },
+            { id: 'bowl',       label: '🎵 Bowl'   },
+            { id: 'white_noise',label: '〰 White'  },
+            { id: 'none',       label: '🔇 None'   },
+          ].map(({ id, label }) => (
+            <button key={id} onClick={() => setLocal(s => ({ ...s, ambient: id }))} style={{
+              flex: '1 0 calc(33% - 8px)', padding: '10px 0', borderRadius: 12,
+              border: `1.5px solid ${local.ambient === id ? accent : border}`,
+              background: local.ambient === id ? `${accent}18` : 'transparent',
+              color: local.ambient === id ? accent : muted,
               fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
               letterSpacing: 0.3,
             }}>
-              {type === 'rain' ? '🌧 Rain' : type === 'white_noise' ? '〰 White' : '🔇 None'}
+              {label}
             </button>
           ))}
         </div>
@@ -1141,7 +1190,7 @@ export default function BreathworkApp({ session, isDark, colors, toggleTheme, on
 
   const TABS = [
     { id: 'morning',      emoji: '☀️', label: 'Morning' },
-    { id: 'post_session', emoji: '💪', label: 'Post' },
+    { id: 'post_session', emoji: '📈', label: 'Post' },
     { id: 'night',        emoji: '🌙', label: 'Night' },
     { id: 'tracker',      emoji: '📊', label: 'Tracker' },
   ];
