@@ -234,7 +234,7 @@ function useWakeLock(active) {
 // ═══════════════════════════════════════════════════════════
 
 const MOOD_EMOJIS   = ['😔','😕','😐','😊','😄'];
-const ENERGY_EMOJIS = ['🪫','🔋','⚡','🔥','🚀'];
+const ENERGY_EMOJIS = ['🌑','🌒','🌓','🌔','🌕'];
 
 function MoodPicker({ stage, onSubmit, accent, nightMode }) {
   const [mood, setMood]     = useState(null);
