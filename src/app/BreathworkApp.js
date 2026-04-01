@@ -884,49 +884,6 @@ function TrackerView({ completions, colors, isDark }) {
         ))}
       </div>
 
-      {/* Recent sessions */}
-      <div style={{
-        background: card, borderRadius: 20, padding: '18px 16px',
-        border: `1px solid ${border}`, boxShadow: colors.shadow,
-      }}>
-        <p style={{ fontSize: 12, fontWeight: 700, color: muted, letterSpacing: 1, textTransform: 'uppercase', margin: '0 0 14px' }}>
-          Recent Sessions
-        </p>
-        {completions.length === 0 ? (
-          <p style={{ color: muted, fontSize: 14, margin: 0 }}>No sessions yet. Start your first routine.</p>
-        ) : (
-          completions.slice(0, 8).map(c => {
-            const r = routineList.find(r => r.id === c.routine_type);
-            const d = new Date(c.completed_at);
-            const isToday = d.toDateString() === today.toDateString();
-            const label = isToday ? 'Today' : d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
-            return (
-              <div key={c.id} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '10px 0', borderBottom: `1px solid ${border}`,
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{
-                    width: 32, height: 32, borderRadius: 10,
-                    background: `${r?.accent}20`, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 16,
-                  }}>{r?.emoji}</div>
-                  <div>
-                    <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: text }}>{r?.label}</p>
-                    <p style={{ margin: 0, fontSize: 11, color: muted }}>{label} · {d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</p>
-                  </div>
-                </div>
-                {c.mood_after && (
-                  <div style={{ display: 'flex', gap: 4 }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: muted }}>{MOOD_LABELS[c.mood_after - 1]}</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: muted }}>{ENERGY_LABELS[c.energy_after - 1]}</span>
-                  </div>
-                )}
-              </div>
-            );
-          })
-        )}
-      </div>
     </div>
   );
 }
