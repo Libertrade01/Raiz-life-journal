@@ -1035,7 +1035,7 @@ function LandingPage({ isDark, colors, initial, onSelect, onToggleTheme, onLogou
 
       {/* Greeting */}
       <p style={{ fontSize: 13, fontWeight: 600, color: muted, letterSpacing: 1.2, textTransform: 'uppercase', margin: '0 0 10px' }}>
-        Grounded. Focused. Connected.
+        Grounded. Connected. Growing.
       </p>
       <h1 style={{ fontSize: 34, fontWeight: 800, color: text, margin: '0 0 48px', letterSpacing: '-1px', lineHeight: 1.1 }}>
         What are we<br />doing today?
