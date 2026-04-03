@@ -724,10 +724,11 @@ function RoutineSession({ routine, settings, session, onBack, onComplete, nightM
           }} />
         ))}
         <div style={{
-          position: 'absolute', inset: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          position: 'absolute', inset: 20, borderRadius: '50%',
+          background: `${accent}20`, display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
-            stroke={accent} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            stroke={accent} strokeWidth="2.5" strokeLinecap="butt" strokeLinejoin="round">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
         </div>
